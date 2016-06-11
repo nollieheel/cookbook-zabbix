@@ -18,8 +18,7 @@
 # limitations under the License.
 #
 
-cb     = 'cookbook-zabbix'
-aagent = node[cb]['agent']
+aagent = node['cookbook-zabbix']['agent']
 
 template '/etc/zabbix/zabbix_agentd.conf' do
   only_if  { Dir.exist?('/etc/zabbix') }

@@ -24,9 +24,8 @@
 # setup in different systems vary too much.
 
 include_recipe "#{cookbook_name}::install_repo"
-cb = 'cookbook-zabbix'
 
-package node[cb]['install']['agent_packages'] do
+package node['cookbook-zabbix']['agent']['packages'] do
   if node['platform_family'] == 'rhel'
     flush_cache(
       :before => true
@@ -34,7 +33,7 @@ package node[cb]['install']['agent_packages'] do
   end
 end
 
-service node[cb]['agent']['service_name'] do
+service node['cookbook-zabbix']['agent']['service_name'] do
   if node['platform_family'] == 'rhel'
     restart_command '/sbin/service zabbix-agent try-restart'
   end

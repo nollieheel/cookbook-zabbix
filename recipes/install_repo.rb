@@ -19,26 +19,27 @@
 #
 
 include_recipe 'apt::default' if node['platform_family'] == 'debian'
-cb = 'cookbook-zabbix'
 
-repo_filename = node[cb]['repo']['package_url'].split('/').last
+node['cookbook-zabbix']['repos'].each do |r|
+  fpath = "#{Chef::Config[:file_cache_path]}/#{r[:repo].split('/').last}"
 
-remote_file "#{Chef::Config[:file_cache_path]}/#{repo_filename}" do
-  source node[cb]['repo']['package_url']
-  action :create_if_missing
-end
-
-case node['platform_family']
-when 'rhel'
-  yum_package node[cb]['repo']['package_name'] do
-    source "#{Chef::Config[:file_cache_path]}/#{repo_filename}"
-    action :install
+  remote_file fpath do
+    source r[:repo]
+    action :create_if_missing
   end
 
-when 'debian'
-  dpkg_package node[cb]['repo']['package_name'] do
-    source   "#{Chef::Config[:file_cache_path]}/#{repo_filename}"
-    action   :install
-    notifies :run, 'execute[apt-get update]', :immediately
+  case node['platform_family']
+  when 'rhel'
+    yum_package r[:name] do
+      source fpath
+      action :install
+    end
+
+  when 'debian'
+    dpkg_package r[:name] do
+      source   fpath
+      action   :install
+      notifies :run, 'execute[apt-get update]', :immediately
+    end
   end
 end

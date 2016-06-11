@@ -65,13 +65,19 @@ Redhat, Centos, Ubuntu
     <td>Key-value pairs of strings to be included in the agent config file as user parameters.</td>
     <td><tt>{}</tt></td>
   </tr>
+  <tr>
+    <td><tt>['cookbook-zabbix']['agent']['packages']</tt></td>
+    <td>Array</td>
+    <td>Array of packages to be installed by an agent.</td>
+    <td><tt>['zabbix-agent', 'zabbix-sender']</tt></td>
+  </tr>
 </table>
 
 ## Usage
 
 ### cookbook-zabbix::agent_package
 
-After specifying the proper agent attributes, especially `node['cookbook-zabbix']['agent']['server_ip']`, include `cookbook-zabbix::agent_package` in your node's `run_list` to install the agent:
+After specifying the proper agent attributes, especially `server_ip` and `hostname`, include `cookbook-zabbix::agent_package` in your node's `run_list` to install the agent:
 
 ```json
 {

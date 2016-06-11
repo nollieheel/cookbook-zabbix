@@ -20,33 +20,67 @@
 
 cb = 'cookbook-zabbix'
 
-# The attribute 'package_url' will determine the version of zabbix.
+# The repository url and filename will determine the version of Zabbix.
 # In this case, it's whatever is latest on the 2.4 line.
-url_pref = 'http://repo.zabbix.com/zabbix/2.4'
-default[cb]['repo']['package_url'] = value_for_platform(
+repo_url = 'http://repo.zabbix.com/zabbix/2.4'
+main_repo = value_for_platform(
   ['redhat', 'centos', 'amazon'] => {
-    'default' => "#{url_pref}/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm"
+    'default' => {
+      :repo => "#{repo_url}/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm",
+      :name => 'zabbix-release-2.4-1.el6.noarch'
+    }
   },
   'debian' => {
-    'default' => "#{url_pref}/debian/pool/main/z/zabbix-release/zabbix-release_2.4-1+wheezy_all.deb"
+    'default' => {
+      :repo => "#{repo_url}/debian/pool/main/z/zabbix-release/zabbix-release_2.4-1+wheezy_all.deb",
+      :name => 'zabbix-release'
+    }
   },
   'ubuntu' => {
-    'default' => "#{url_pref}/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.4-1+trusty_all.deb"
+    'default' => {
+      :repo => "#{repo_url}/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.4-1+trusty_all.deb",
+      :name => 'zabbix-release'
+    }
   }
 )
-default[cb]['repo']['package_name'] = value_for_platform_family(
-  'rhel'   => 'zabbix-release-2.4-1.el6.noarch',
-  'debian' => 'zabbix-release'
+
+default[cb]['repos'] = value_for_platform_family(
+  'rhel' => [
+    main_repo,
+    {
+      :repo => "#{repo_url}/rhel/6/x86_64/zabbix-get-2.4.1-1.el6.x86_64.rpm",
+      :name => 'zabbix-get-2.4.1-1.el6.x86_64'
+    },
+    {
+      :repo => "#{repo_url}/rhel/6/x86_64/zabbix-sender-2.4.1-1.el6.x86_64.rpm",
+      :name => 'zabbix-sender-2.4.1-1.el6.x86_64'
+    }
+  ],
+  'debian' => [main_repo]
 )
 
-default[cb]['install']['agent_packages'] = ['zabbix-agent']
+default[cb]['server']['packages'] = [
+  value_for_platform_family(
+    'rhel'   => 'zabbix-web-mysql',
+    'debian' => 'zabbix-frontend-php'
+  ),
+  'zabbix-server-mysql',
+  'zabbix-get'
+]
 
-default[cb]['agent']['listen_port']            = '10050'
-default[cb]['agent']['hostname']               = 'Some Zabbix Node'
-default[cb]['agent']['server_ip']              = '127.0.0.1'
+default[cb]['agent']['packages'] = [
+  'zabbix-agent',
+  'zabbix-sender'
+]
+default[cb]['agent']['service_name'] = 'zabbix-agent'
+
+default[cb]['agent']['listen_port'] = '10050'
+default[cb]['agent']['hostname']    = 'Some Zabbix Node'
+default[cb]['agent']['server_ip']   = '127.0.0.1'
+
 default[cb]['agent']['enable_active_checks']   = true
 default[cb]['agent']['refresh_active_checks']  = 120
 default[cb]['agent']['enable_remote_commands'] = '0'
-default[cb]['agent']['advanced_params']        = {}
-default[cb]['agent']['user_params']            = {}
-default[cb]['agent']['service_name']           = 'zabbix-agent'
+
+default[cb]['agent']['advanced_params'] = {}
+default[cb]['agent']['user_params']     = {}
