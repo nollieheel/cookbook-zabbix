@@ -21,24 +21,29 @@
 cb = 'cookbook-zabbix'
 
 # The repository url and filename will determine the version of Zabbix.
-# In this case, it's whatever is latest on the 2.4 line.
-repo_url = 'http://repo.zabbix.com/zabbix/2.4'
+# Version 2.2 is only used on Ubuntu 12.04
+repo_24 = 'http://repo.zabbix.com/zabbix/2.4'
+repo_22 = 'http://repo.zabbix.com/zabbix/2.2'
 main_repo = value_for_platform(
   ['redhat', 'centos', 'amazon'] => {
     'default' => {
-      :repo => "#{repo_url}/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm",
+      :repo => "#{repo_24}/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm",
       :name => 'zabbix-release-2.4-1.el6.noarch'
     }
   },
   'debian' => {
     'default' => {
-      :repo => "#{repo_url}/debian/pool/main/z/zabbix-release/zabbix-release_2.4-1+wheezy_all.deb",
+      :repo => "#{repo_24}/debian/pool/main/z/zabbix-release/zabbix-release_2.4-1+wheezy_all.deb",
       :name => 'zabbix-release'
     }
   },
   'ubuntu' => {
+    '12.04' => {
+      :repo => "#{repo_22}/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.2-1+precise_all.deb",
+      :name => 'zabbix-release'
+    },
     'default' => {
-      :repo => "#{repo_url}/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.4-1+trusty_all.deb",
+      :repo => "#{repo_24}/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.4-1+trusty_all.deb",
       :name => 'zabbix-release'
     }
   }
@@ -48,11 +53,11 @@ default[cb]['repos'] = value_for_platform_family(
   'rhel' => [
     main_repo,
     {
-      :repo => "#{repo_url}/rhel/6/x86_64/zabbix-get-2.4.1-1.el6.x86_64.rpm",
+      :repo => "#{repo_24}/rhel/6/x86_64/zabbix-get-2.4.1-1.el6.x86_64.rpm",
       :name => 'zabbix-get-2.4.1-1.el6.x86_64'
     },
     {
-      :repo => "#{repo_url}/rhel/6/x86_64/zabbix-sender-2.4.1-1.el6.x86_64.rpm",
+      :repo => "#{repo_24}/rhel/6/x86_64/zabbix-sender-2.4.1-1.el6.x86_64.rpm",
       :name => 'zabbix-sender-2.4.1-1.el6.x86_64'
     }
   ],
